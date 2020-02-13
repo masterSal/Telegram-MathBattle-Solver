@@ -7,47 +7,56 @@ logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s'
 
 class MathBattleCheat:
     def __init__(self, url, gdriver, score, delay=1):
-        self.url = str(url)
-        self.gecko = str(gdriver)
-        self.delay = int(delay)
-        self.score = int(score)
-        self.firefox = webdriver.Firefox(executable_path=self.gecko)
-        self.x = None
-        self.y = None
-        self.op = None
-        self.res = None
+        self.url = str(url) # url
+        self.gecko = str(gdriver) # geckodriver
+        self.delay = int(delay) # delay before evaultion the next math challenge
+        self.score = int(score) # how many challenges to solve
+        self.firefox = webdriver.Firefox(executable_path=self.gecko) # driver
+        self.x = None # x value
+        self.y = None # y value
+        self.op = None # opration
+        self.res = None # challange result
 
         logging.info("Init...")
     
 
     def bopen(self):
         logging.info("Opening url...")
-        self.firefox.get(self.url)
+        self.firefox.get(self.url) # open browser and load url
     
     
     def bclose(self):
         logging.info("Closing broswer...")
-        self.firefox.close()
+        self.firefox.close() # close browser
     
     
     def startGame(self):
         logging.info("Starting the game...")
-        self.firefox.find_elements_by_class_name("icon_play")[0].click()
+        self.firefox.find_elements_by_class_name("icon_play")[0].click() # find element by class name and click
     
     
     def right(self):
         logging.info("Right answer...")
-        self.firefox.find_element_by_id("button_correct").click()
+        self.firefox.find_element_by_id("button_correct").click() # click correct button
     
 
     def wrong(self):
         logging.info("Wrong answer...")
-        self.firefox.find_element_by_id("button_wrong").click()
+        self.firefox.find_element_by_id("button_wrong").click() # click wrong button
     
 
     def getOp(self):
-        o = self.firefox.find_element_by_id("task_op").text
-        if o == "×":
+        o = self.firefox.find_element_by_id("task_op").text # get the opration
+        # this part is need because when the opreation is fetched from
+        # the game the eval() function throws and error because it's not the
+        # correct oprator
+        #
+        # e.g.
+        #   '×' - python can't evaluate '×' as *(times) so it need to be changed to *
+        #   '–' - and this minu charator is diffrent from the regular '-' char
+        #       
+        #   '–' != '-'
+        if o == "":
             return '*'
         elif o == "–":
             return '-'
@@ -55,6 +64,11 @@ class MathBattleCheat:
 
     
     def getValues(self):
+        # get all four values
+        # x value
+        # y value
+        # oprator
+        # and the result
         logging.info("Getting x...")
         self.x = self.firefox.find_element_by_id("task_x").text
         logging.info("Getting y...")
@@ -67,34 +81,35 @@ class MathBattleCheat:
 
     def evalute(self):
         logging.info("Evaulating {}{}{}".format(str(self.x), str(self.op), str(self.y)))
-        eValue = eval(self.x + self.op + self.y)
+        eValue = eval(self.x + self.op + self.y) # eval the values
         logging.info("eValue: " + str(eValue))
 
+        # change into int and compare
         if int(eValue) == int(self.res):
-            self.right()
+            self.right() # if its correct, click button_correct
         else:
-            self.wrong()
+            self.wrong() # if its not, click button_wrong
 
     def start(self):
-        self.bopen()
-        self.startGame()
+        self.bopen() # open browser
+        self.startGame() # click the play button
 
         # delay
-        time.sleep(2)
+        time.sleep(2) # give it 2 sec to start the game
         
         while self.score != 0:
-            self.getValues()
-            self.evalute()
+            self.getValues() # get all values
+            self.evalute() # evaluate
             
             # decrease
             self.score -= 1
             logging.info("Sleeping for {} sec...".format(str(self.delay)))
-            time.sleep(self.delay)
+            time.sleep(self.delay) # delay
         
         # delay
         logging.info("15 Second delay.")
         time.sleep(15)
-        self.bclose()
+        self.bclose() # close the browser
 
 
 
@@ -107,7 +122,7 @@ def main():
             gdriver="./geckodriver", 
             score=100
             )
-        mbc.start()
+        mbc.start() # start the whole process.
     except Exception as e:
         logging.error("Exception: " + e.msg)
 
