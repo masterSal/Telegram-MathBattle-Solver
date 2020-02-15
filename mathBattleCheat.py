@@ -6,7 +6,7 @@ from selenium import webdriver
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s', level=logging.INFO)
 
 class MathBattleCheat:
-    def __init__(self, url, gdriver, score, delay=1):
+    def __init__(self, url, gdriver, score, delay=.4):
         self.url = str(url) # url
         self.gecko = str(gdriver) # geckodriver
         self.delay = int(delay) # delay before evaultion the next math challenge
@@ -56,7 +56,7 @@ class MathBattleCheat:
         #   '–' - and this minu charator is diffrent from the regular '-' char
         #       
         #   '–' != '-'
-        if o == "":
+        if o == "×":
             return '*'
         elif o == "–":
             return '-'
@@ -118,9 +118,9 @@ class MathBattleCheat:
 def main():
     try:
         mbc = MathBattleCheat(
-            url="https://tbot.xyz/math/#eyJ1Ijo2NTgyNTg3NDIsIm4iOiJI4oiGZGVzICIsImciOiJNYXRoQmF0dGxlIiwiY2kiOiIyMjA5OTM3NjE3NTQ0NDAzMTUiLCJpIjoiQkFBQUFNNEFBQURMZ2NTeUdqLVRORVY3YXF3In05MmM1N2Y2YTc3OGQzMTU0NTBlOTNjMzA4M2I1MjY2ZA==", 
+            url="https://tbot.xyz/math/", 
             gdriver="./geckodriver", 
-            score=100
+            score=1565
             )
         mbc.start() # start the whole process.
     except Exception as e:
